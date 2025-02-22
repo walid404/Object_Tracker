@@ -53,14 +53,6 @@ class ObjectTracker:
             cv2.destroyAllWindows()
             return
 
-
-        ret, frame = self.cap.read()
-        if not ret:
-            print("Error: Unable to read frame")
-            self.cap.release()
-            cv2.destroyAllWindows()
-            return
-
         while True:
             ret, frame = self.cap.read()
             if not ret:
