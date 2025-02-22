@@ -57,7 +57,7 @@ pip install -r requirements.txt
 ### run the script
 To run the script, run:
 ```bash
-python Object_Tracker
+python Object_Tracking.py
 ```
 
 ---
