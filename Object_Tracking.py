@@ -7,7 +7,6 @@ class ObjectTracker:
     def __init__(self):
         """Initialize the object tracker using OpenCV's CSRT tracker."""
         self.tracker = cv2.TrackerCSRT.create()
-        self.selected_box = None  # Store manually selected bounding box
         self.cap = cv2.VideoCapture(0)  # Open webcam
 
 
@@ -23,22 +22,27 @@ class ObjectTracker:
             if not ret:
                 print("Error: Unable to capture video")
                 return False
-
+            frame1 = frame.copy()
             cv2.putText(frame, "Press 'S' to select object | 'Q' to exit", (50, 50),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             cv2.imshow('Frame', frame)
 
             key = cv2.waitKey(1) & 0xFF
-            if key == ord('q'):
+            if key == ord('q') or key == ord('Q'):
                 return False  # Exit
-            if key == ord('s'):
+            if key == ord('s') or key == ord('S'):
                 cv2.destroyAllWindows()
                 # Select the ROI
-                self.selected_box = cv2.selectROI("Select Object", frame, fromCenter=False, showCrosshair=True)
-                # Initialize the tracker with the selected ROI
-                self.tracker.init(frame, tuple(map(int, self.selected_box)))
-                cv2.destroyWindow("Select Object")
-                return True  # Successfully selected an object
+                while True:
+                    try:
+                        cv2.putText(frame1, "'Enter' to confirm selection | Press 'C' to cancel selection", (50, 50),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                        selected_box = cv2.selectROI("Select Object", frame1, fromCenter=False, showCrosshair=True)
+                        self.tracker.init(frame1, selected_box) # Initialize the tracker with the selected ROI
+                        cv2.destroyWindow("Select Object")
+                        return True  # Successfully selected an object
+                    except:
+                        print("You didn't select ROI please select it")
 
 
 
@@ -67,7 +71,7 @@ class ObjectTracker:
 
             # Draw bounding box
             if success:
-                x, y, w, h = map(int, box)
+                x, y, w, h = box
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (100, 255, 0), 2)
                 cv2.putText(frame, "Tracking", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
             else:
@@ -76,7 +80,8 @@ class ObjectTracker:
             cv2.imshow("Tracked Object", frame)
 
             # Exit on 'q' key press
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q') or key == ord('Q'):
                 break
 
         self.cap.release()
