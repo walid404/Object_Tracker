@@ -44,6 +44,15 @@ cd Object_Tracker
 
 ---
 
+### Create Virtual Environment
+To create and activate, run:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+---
+
 ### Install Requirements
 
 To install the required dependencies, run:
