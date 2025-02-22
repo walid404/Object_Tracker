@@ -33,7 +33,10 @@ class ObjectTracker:
                 return False  # Exit
             if key == ord('s'):
                 cv2.destroyAllWindows()
+                # Select the ROI
                 self.selected_box = cv2.selectROI("Select Object", frame, fromCenter=False, showCrosshair=True)
+                # Initialize the tracker with the selected ROI
+                self.tracker.init(frame, tuple(map(int, self.selected_box)))
                 cv2.destroyWindow("Select Object")
                 return True  # Successfully selected an object
 
@@ -46,15 +49,13 @@ class ObjectTracker:
             cv2.destroyAllWindows()
             return
 
-        # Initialize the tracker with the selected ROI
+
         ret, frame = self.cap.read()
         if not ret:
             print("Error: Unable to read frame")
             self.cap.release()
             cv2.destroyAllWindows()
             return
-
-        self.tracker.init(frame, tuple(map(int, self.selected_box)))
 
         while True:
             ret, frame = self.cap.read()
